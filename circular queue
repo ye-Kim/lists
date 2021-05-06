@@ -1,0 +1,84 @@
+/*
+* File name: circular queue
+* Author: ye-Kim (yekim.galanthus@gmail.com)
+* Last updated: 2021. 03. 19
+*/
+
+#include <stdio.h>
+#define MAX_SIZE 5
+
+int buf[MAX_SIZE]; //buffer array
+int head = -1, rear = -1;
+
+void insert_num(int); //insert a number in buffer
+int del_num(); //delete the first number in buffer
+
+void stk_scan(); //print the buffer
+
+void main() {
+	int i;
+	int nums[11] = { 10, 50, 20, 70, -1, 100, 40, 140, -1, -1, -1 };
+
+	/* To recognize inserting or deleting, negative numbers in this list.
+	when nums[i] is positive, insert the number
+	and when nums[i] is negative, delete the first number */
+
+	for (i = 0; i < 11; i++) {
+		if (nums[i] >= 0) { //nums[i] is positive: insert
+			printf("\nInsert num %d", nums[i]);
+			insert_num(nums[i]);
+		}
+		else { //nums[i] is negative: delete
+			int del = del_num();
+			printf("\nDelete num %d", del);
+			stk_scan();
+		}
+	}
+}
+void insert_num(int n) {
+	int adr = (rear+1) % 5; //the position of number to insert
+
+	if (head < 0) { //if the first inserting
+		head = 0;
+	}
+
+	if (buf[adr] != NULL) { //case overflow
+		printf("\nError: Stack overflow\n");
+	}
+	else { //insert the number, update rear
+		buf[adr] = n;
+		rear = adr;
+	}
+	
+	stk_scan();
+}
+int del_num() {
+	int adr = head; //the position of number to delete
+	int res = buf[adr]; //the number deleted
+	
+	buf[adr] = NULL; //delete the first number
+	head = ++adr % 5; //head update
+
+	return res;
+}
+
+void stk_scan() {
+	int i;
+
+	printf("\nhead: %d, rear: %d", head, rear);
+
+	printf("\n===SCAN START===");
+	if (head <= rear) {
+		for (i = head; i <= rear; i++) {
+			printf("\n%d: %d", i, buf[i]);
+		}
+	}
+	else { //head > rear
+		int adr; //the position of number to print
+		for (i = head; i <= (rear + 5); i++) {
+			adr = i % 5;
+			printf("\n%d: %d", adr, buf[adr]);
+		}
+	}
+	printf("\n===SCAN OCOMPLETE===\n");
+}
