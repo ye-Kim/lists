@@ -1,0 +1,169 @@
+/*
+* File name: queue using 2 stacks
+* author: ye-Kim (yekim.galanthus@gmail.com)
+* last updated: 20201. 03. 15.
+*/
+
+#include <stdio.h>
+#define MAX_SIZE 10 //size of stack
+//#define _DEBUG_ //to debug
+
+int st1[MAX_SIZE]; //stack 1 (queue)
+int st2[MAX_SIZE]; //stack 2
+
+int top_1 = -1;
+int top_2 = -1;
+
+int st1_full(); //check the stack 1(queue) is full
+int st1_empty(); //check the stack 1(queue) is empty
+void st1_push(int); //input the number to stack 1
+int st1_pop(); //get rid of the number of stack 1
+
+void st2_push(int); //input the number to stack 2
+int st2_pop(); //get rid of the number of stack 2
+
+void st1_scan(); //print stack 1
+void st2_scan(); //print stack 2
+
+void enqueue(); //enqueue to the queue
+int dequeue(); //dequeue from the queue
+
+void main() {
+	int chk = -1; //to decide enqueue, dequeue, or quit
+
+	printf("\nPress 1 to enqueue, 2 to dequeue, 3 to quit\n");
+	scanf_s("\n%d", &chk);
+
+	while (1) {
+		if (chk == 1) { //chosen to enqueue
+			if (st1_full() == 1) { //the queue is full
+				printf("\nError: the queue is full");
+			}
+			else { //the queue is not full
+				enqueue();
+				st1_scan();
+			}
+		}
+		else if (chk == 2) { //chosen to dequeue
+			if (st1_empty() == 1) { //the queue is empty
+				printf("\nError: the queue is empty");
+			}
+			else { //the queue is not empty
+				int res = dequeue();
+				printf("\ndequeue: %d", res);
+				st1_scan();
+			}
+		}
+		else if (chk == 3) { //chosen to quit
+			st1_scan();
+			break;
+		}
+		else {
+			printf("\nError: press 1, 2, or 3");
+		}
+
+		printf("\nPress 1 to enqueue, 2 to dequeue, 3 to quit\n");
+		scanf_s("\n%d", &chk);
+	}
+
+}
+
+int st1_full() {
+	if (top_1 >= MAX_SIZE - 1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+int st1_empty() {
+	if (top_1 <= -1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+void st1_push(int n1) {
+	top_1++;
+	st1[top_1] = n1;
+}
+int st1_pop() {
+	int pnum1 = st1[top_1];
+	st1[top_1] = NULL;
+	top_1--;
+
+	return pnum1;
+}
+
+void st2_push(int n2) {
+	top_2++;
+	st2[top_2] = n2;
+}
+int st2_pop() {
+	int pnum2 = st2[top_2];
+	st2[top_2] = NULL;
+	top_2--;
+
+	return pnum2;
+}
+
+void st1_scan() {
+	int i;
+
+	printf("\n===SCAN START: QUEUE (STACK 1)===\n");
+	for (i = 0; i <= top_1; i++) {
+		printf("index %d: %d\n", i, st1[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
+void st2_scan() {
+	int i;
+
+	printf("\n===SCAN START: STACK 2===\n");
+	for (i = 0; i <= top_2; i++) {
+		printf("index %d: %d\n", i, st2[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
+
+void enqueue() {
+	int num;
+	printf("\nEnter the number to enqueue: ");
+	scanf_s("\n%d", &num);
+
+	st1_push(num);
+}
+int dequeue() {
+	int deq;
+
+	while (top_1 >= 0) {
+#ifdef _DEBUG_
+		printf("\ntop1: %d", top_1);
+#endif
+
+		st2_push(st1_pop());
+
+#ifdef _DEBUG_
+		st1_scan();
+		st2_scan();
+#endif
+	}
+
+	deq = st2_pop(); //get the number to return
+	
+	while (top_2 >= 0) {
+#ifdef _DEBUG_
+		printf("\ntop2: %d", top_2);
+#endif
+
+		st1_push(st2_pop());
+
+#ifdef _DEBUG_
+		st1_scan();
+		st2_scan();
+#endif
+	}
+
+	return deq;
+}
