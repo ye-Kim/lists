@@ -1,0 +1,140 @@
+/*
+* File name: queue using single linked list
+* author: ye-Kim (yekim.galanthus@gmail.com)
+* last updated: 2021. 03. 12.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAXNUM 10 //the maximum size of queue
+//#define _DEBUG_ //to debug
+
+struct NODE { //node of queue
+	int key;
+	struct NODE* next;
+};
+
+void enqueue(struct NODE*, int); //add the number to queue
+int dequeue(struct NODE*); //return the first node of queue, and remove it
+int queue_full(); //check if the queue is full
+int queue_empty(); //check if the queue is empty
+void queue_scan(); //printing the queue
+void queue_free(struct NODE*); //remove all queue when quit 
+
+struct NODE* head; //the start point of queue
+struct NODE* rear; //the end point of queue
+int cnt = 0; //the number of linked nodes
+
+void main() {
+	int chk; //to choose enqueue, dequeue, or quit
+
+	head = (struct NODE*)malloc(sizeof(struct NODE));
+	rear = (struct NODE*)malloc(sizeof(struct NODE));
+	head->next = rear;
+	rear->next = NULL;
+
+	printf("\nPress 1 to enqueue, 2 to dequeue, 3 to quit\n");
+	scanf_s("%d", &chk);
+
+	while (1) {
+		if (chk == 1) { //chosen to enqueue
+			if (queue_full() == 0) { //queue is not full
+				int innum; //number to enqueue
+				printf("\nEnter the number to enqueue: ");
+				scanf_s("%d", &innum);
+				enqueue(head, innum);
+			}
+			else { //queue is full
+				printf("\nError: the queue is full");
+			}
+			queue_scan();
+		}
+		else if (chk == 2) { //chosen to dequeue
+			if (queue_empty() == 0) { //queue is not empty
+				int outnum; //number to dequeue
+				outnum = dequeue((*head).next); //dequeue first node: first node behind head
+				printf("\nDequeue Success: %d", outnum);
+			}
+			else { //queue is empty
+				printf("\nError: the queue is empty");
+			}
+			queue_scan();
+		}
+		else if (chk == 3) { //chosen to quit
+			queue_free(head); //remove all queue to retain memory
+			break;
+		}
+		else {
+			printf("\nError: press key 1, 2, or 3");
+		}
+		printf("\nPress 1 to enqueue, 2 to dequeue, 3 to quit\n");
+		scanf_s("%d", &chk);
+	}
+
+}
+
+void enqueue(struct NODE* h, int n) {
+	struct NODE* newnode, * oldptr=h, * ptr = h;
+	
+	newnode = (struct NODE*)malloc(sizeof(struct NODE)); //new node to add
+	newnode->key = n;
+
+	while (ptr->next!=NULL) { //find the location to add newnode: in front of rear
+		oldptr = ptr;
+		ptr = ptr->next;
+	}
+
+	oldptr->next = newnode;
+	newnode->next = rear;
+	cnt++;
+}
+int dequeue(struct NODE* del) {
+	int res;
+	res = del->key;
+
+	head->next = del->next; //connect head to second node(new first node)
+	free(del);
+	cnt--;
+
+	return res;
+}
+int queue_full() {
+	if (cnt >= MAXNUM) { //the queue is full
+		return 1;
+	}
+	else { //the queue is not full
+		return 0;
+	}
+}
+int queue_empty() {
+	if (cnt <= 0) { //the queue is empty
+		return 1;
+	}
+	else { //the queue is not empty
+		return 0;
+	}
+}
+void queue_scan() {
+	struct NODE* ptr = head->next;
+	int i = 0;
+
+#ifdef _DEBUG_
+	printf("\ncnt = %d", cnt);
+#endif
+	printf("\n===SCAN START===");
+	while (ptr->next!=NULL) { //to except the rear (rear.next==NULL)
+		printf("\nindex %d: %d", i, (*ptr).key);
+		ptr = ptr->next;
+		i++;
+	}
+	printf("\n===SCAN COMPLETE===\n");
+}
+void queue_free(struct NODE* hd) {
+	struct NODE* oldptr = hd, * ptr;
+
+	while (oldptr) {
+		ptr = oldptr->next;
+		free(oldptr);
+		oldptr = ptr;
+	}
+}
