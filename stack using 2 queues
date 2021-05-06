@@ -1,0 +1,187 @@
+/*
+* File name: stack using 2 queues
+* author: ye-Kim (yekim.galanthus@gmail.com)
+* last updated: 20201. 03. 15.
+*/
+
+#include <stdio.h>
+#define MAX_SIZE 10 //size of queue
+//#define _DEBUG_ //to debug
+
+int q1[MAX_SIZE]; //queue 1 == stack
+int q2[MAX_SIZE]; //queue 2
+
+int front_1 = -1, rear_1 = -1;
+int front_2 = -1, rear_2 = -1;
+
+int q1_full(); //check queue 1(stack) is full
+int q1_empty(); //check queue 1(stack) is empty
+void enq1(int); //add the number to queue 1
+int deq1(); //return the first number of queue 1, delete it, and move the numbers after it
+void scan_q1(); //print queue 1
+
+void enq2(int); //add the number to queue 2
+int deq2(); //return the first number of queue 2, delete it, and move the numbers after it
+void scan_q2(); //print queue 2
+
+void push(); //push to stack
+int pop(); //pop to stack
+
+void main() {
+	int chk = -1; //to decide push, pop or quit
+
+	printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+	scanf_s("%d", &chk);
+
+	while (1) {
+		if (chk == 1) { //chosen to push
+			if (q1_full() == 1) { //the stack is full
+				printf("\nError: The stack is full");
+			}
+			else { //the stack is not full
+				push();
+			}
+
+			scan_q1();
+		}
+		else if (chk == 2) { //chosen to pop
+			if (q1_empty() == 1) { //the stack is emtpy
+				printf("\nError: The stack is empty");
+			}
+			else { //the stack is not empty
+				printf("\npop: %d", pop());
+			}
+
+			scan_q1();
+		}
+		else if (chk == 3) { //choesn to quit
+			scan_q1();
+			break;
+		}
+		else {
+			printf("\nError: Press 1, 2, or 3");
+		}
+
+		printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+		scanf_s("%d", &chk);
+	}
+}
+
+int q1_full() {
+	if (rear_1 >= MAX_SIZE - 1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+int q1_empty() {
+	if (front_1 <= -1 || rear_1 < 0) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+void enq1(int n1) {
+	if (front_1 < 0) {
+		front_1 = 0;
+	}
+	
+	rear_1++;
+	q1[rear_1] = n1;
+}
+int deq1() {
+	int res1 = q1[front_1]; //get the number to return
+	int i;
+
+	for (i = front_1; i < rear_1; i++) { //move on the numbers after the first number of queue 1
+		q1[i] = q1[i + 1];
+	}
+
+	q1[rear_1--] = NULL; //delete the last number(empty) and -1 from rear_1
+	return res1;
+}
+void scan_q1() {
+	int i;
+
+	printf("\n===SCAN START : STACK(QUEUE 1)===\n");
+	for (i = front_1; i <= rear_1; i++) {
+		printf("index %d: %d\n", i, q1[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
+
+void enq2(int n2) {
+	if (front_2 < 0) {
+		front_2 = 0;
+	}
+
+	rear_2++;
+	q2[rear_2] = n2;
+}
+int deq2() {
+	int res2 = q2[front_2]; //get the number to return
+	int i;
+
+	for (i = front_2; i < rear_2; i++) { //move on the numbers after the first number of queue 2
+		q2[i] = q2[i + 1];
+	}
+
+	q2[rear_2--] = NULL; //delete the last number(empty) and -1 from rear_2
+	return res2;
+}
+void scan_q2() {
+	int i;
+
+	printf("\n===SCAN START: QUEUE 2===\n");
+	for (i = front_2; i <= rear_2; i++) {
+		printf("index %d: %d\n", i, q2[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
+
+void push() {
+	int num;
+
+	printf("\nEnter the number to push: ");
+	scanf_s("%d", &num);
+
+	enq1(num);
+
+}
+int pop() {
+	int popnum;
+
+#ifdef _DEBUG_
+	printf("\nfront1: %d, rear1: %d", front_1, rear_1);
+#endif
+
+	while (rear_1 > 0) { //move the numbers of queue 1 to queue 2 except last number
+		enq2(deq1());
+	}
+
+#ifdef _DEBUG_
+	printf("\nmove the numbers from q1 to q2");
+	scan_q1();
+	scan_q2();
+#endif
+
+	popnum = deq1(); //in stack, last number only remained. pop it.
+
+#ifdef _DEBUG_
+	printf("\nfront2: %d, rear2: %d", front_2, rear_2);
+#endif
+
+	while (rear_2 >= 0) { //move the numbers of queue 2 to queue 1
+		enq1(deq2());
+	}
+
+#ifdef _DEBUG_
+	printf("\nmove the numbers from q2 to q1");
+	scan_q1();
+	scan_q2();
+#endif
+
+	return popnum;
+}
