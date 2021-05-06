@@ -1,0 +1,145 @@
+/*
+* File name: stack using single linked list
+* author: ye-Kim (yekim.galanthus@gmail.com)
+* last updated: 20201. 03. 12.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAXNUM 10 //the maximum size of stack
+//#define _DEBUG_ //to debug
+
+struct NODE { //node of stack
+	int key;
+	struct NODE* next;
+};
+
+void push(struct NODE*, int); //add the number to stack
+int pop(struct NODE*); //return the last node of stack, and remove it
+int stack_full(); //check if the stack is full
+int stack_empty(); //check if the stack is empty
+void stack_scan(); //printing the stack
+void stack_free(struct NODE*); //remove all stack when quit
+
+struct NODE* head; //the start point of stack
+int cnt = 0; //the number of linked nodes
+
+void main() {
+	int chk; //to choose push, pop, or quit
+
+	head = (struct NODE*)malloc(sizeof(struct NODE));
+	head->next = NULL;
+
+	printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+	scanf_s("%d", &chk);
+
+	while (1) {
+		if (chk == 1) { //chosen to push
+			if (stack_full() == 0) { //stack is not full
+				int innum; //number to push
+				printf("\nEnter the number to push: ");
+				scanf_s("%d", &innum);
+				push(head, innum);
+			}
+			else { //stack is full
+				printf("\nError: the stack is full");
+			}
+			stack_scan();
+		}
+		else if (chk == 2) { //chosen to pop
+			int outnum;
+			if (stack_empty() == 0) { //stack is not empty
+				int outnum; //number to pop
+				outnum = pop(head);
+				printf("\nPop Success: %d", outnum);
+			}
+			else { //stack is empty
+				printf("\nError: the stack is empty");
+			}
+			stack_scan();
+		}
+		else if (chk == 3) { //chosen to quit
+			stack_free(head); //remove all stack to retain memory
+			break;
+		}
+		else {
+			printf("\nError: press key 1, 2, or 3");
+		}
+		printf("\nPress 1 to push, 2 to pop, 3 to exit\n");
+		scanf_s("%d", &chk);
+	}
+
+}
+
+void push(struct NODE* h, int n) {
+	struct NODE* newnode, * ptr = h;
+
+	newnode = (struct NODE*)malloc(sizeof(struct NODE)); //make new node to add
+	newnode->key = n;
+	newnode->next = NULL;
+
+	while (ptr->next!=NULL) { //to reach the end of stack
+		ptr = ptr->next;
+	}
+
+	ptr->next = newnode; //add newnode at the end of stack
+	cnt++; //plus the number of node link
+}
+int pop(struct NODE* he) {
+	struct NODE* ptr, * oldptr = he;
+	int res;
+
+	ptr = oldptr->next; //the first node of stack
+
+	while (ptr->next!=NULL) { //to reach the end of stack
+		oldptr = ptr;
+		ptr = ptr->next;
+	}
+
+	res = ptr->key; //the number to pop
+	free(ptr); //remove the last node
+	oldptr->next = NULL;
+	cnt--;
+
+	return res;
+}
+int stack_full() {
+	if (cnt >= MAXNUM) { //the stack is full
+		return 1;
+	}
+	else { //the stack is not full
+		return 0;
+	}
+}
+int stack_empty() {
+	if (cnt <= 0) { //the stack is empty
+		return 1;
+	}
+	else { //the stack is not empty
+		return 0;
+	}
+}
+void stack_scan() {
+	int i = 0;
+	struct NODE* first;
+	first = head->next;
+#ifdef _DEBUG_
+	printf("\ncnt = %d", cnt);
+#endif
+	printf("\n===SCAN START===");
+	while (first) {
+		printf("\nindex %d: %d", i, (*first).key);
+		first = first->next;
+		i++;
+	}
+	printf("\n===SCAN COMPLETE===\n");
+}
+void stack_free(struct NODE* hd) {
+	struct NODE* oldptr = hd, * ptr;
+	
+	while (oldptr) {
+		ptr = oldptr->next;
+		free(oldptr);
+		oldptr = ptr;
+	}
+}
