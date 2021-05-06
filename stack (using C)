@@ -1,0 +1,96 @@
+/*
+* File name: stack list
+* Author: ye-Kim (yekim.galanthus@gmail.com)
+* Last updated: 2021. 03. 09.
+*/
+
+#include <stdio.h>
+#define MAX_SIZE 10 //size of stack
+
+int stack[MAX_SIZE];
+int top = -1;
+
+int stack_full(); //check the stack is full
+int stack_empty(); //check the stack is empty
+void push(int); //add the number to stack
+int pop(); //return the stack[top], and delete it
+void stack_scan(); //printing the stack
+
+void main() {
+	int num, resnum;
+	int chk = -1; //to choose push, pop or quit
+
+	printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+	scanf_s("%d", &chk);
+
+	while (chk != 3) {
+		if (chk == 1) { //chosen to push
+			if (stack_full() == 0) { //stack is not full
+				printf("\nEnter the number to insert: ");
+				scanf_s("%d", &num);
+				push(num);
+				stack_scan();
+			}
+			else { //stack is full
+				printf("\nError: The stack is full");
+			}
+		}
+		else if (chk == 2) { //chosen to pop
+			if (stack_empty() == 0) { //stack is not empty
+				resnum = pop();
+				printf("\nThe poped number : %d", resnum);
+				stack_scan();
+			}
+			else { //stack is empty
+				printf("\nError: The stack is empty");
+			}
+		}
+		else if (chk == 3) { //chosen to quit
+			break;
+		}
+		else {
+			printf("\nError: Please push 1, 2, or 3");
+		}
+
+		printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+		scanf_s("%d", &chk);
+	}
+
+}
+
+int stack_full() {
+	if (top >= MAX_SIZE - 1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+int stack_empty() {
+	if (top <= -1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+void push(int n) {
+	top++;
+	stack[top] = n;
+}
+int pop() {
+	int res = stack[top];
+
+	stack[top] = NULL; //delete the number to pop
+	top--;
+	return res;
+}
+void stack_scan() {
+	int i;
+
+	printf("\n===SCAN START===\n");
+	for (i = 0; i <= top; i++) {
+		printf("index %d: %d\n", i, stack[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
