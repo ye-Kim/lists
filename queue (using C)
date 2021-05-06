@@ -1,0 +1,103 @@
+/*
+* File name: queue
+* Author: ye-Kim (yekim.galanthus@gmail.com)
+* Last updated: 2021. 03. 09.
+*/
+
+#include <stdio.h>
+#define MAX_SIZE 10 //size of queue
+
+int queue[MAX_SIZE];
+int front = -1, rear = -1;
+
+int queue_full(); //check the queue is full
+int queue_empty(); //check the queue is empty
+void enqueue(int); //add the number to queue
+int dequeue(); //return the queue[front], delete it, and move the numbers after it
+void queue_scan(); //printing the queue
+
+void main() {
+	int num, resnum;
+	int chk = -1; //to choose enqueue, dequeue or quit
+
+	printf("\nPress 1 to enqueue, 2 to dequeue, 3 to quit\n");
+	scanf_s("%d", &chk);
+
+	while (chk != 3) {
+		if (chk == 1) { //chosen to enqueue
+			if (queue_full() == 0) { //the queue is not full
+				printf("\nEnter the number to insert: ");
+				scanf_s("%d", &num);
+				enqueue(num);
+				queue_scan();
+			}
+			else { //the queue is full
+				printf("\nError: The queue is full");
+			}
+		}
+		else if (chk == 2) { //chosen to dequeue
+			if (queue_empty() == 0) { //the queue is not empty
+				resnum = dequeue();
+				printf("\nThe dequeued number : %d", resnum);
+				queue_scan();
+			}
+			else { //the queue is empty
+				printf("\nError: The queue is empty");
+			}
+		}
+		else if (chk == 3) { //chosen to quit
+			break;
+		}
+		else {
+			printf("\nError: Please push 1, 2, or 3");
+		}
+
+		printf("\nPress 1 to push, 2 to pop, 3 to quit\n");
+		scanf_s("%d", &chk);
+	}
+}
+
+int queue_full() {
+	if (rear >= MAX_SIZE - 1) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+int queue_empty() {
+	if (front <= -1 || rear < 0) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+void enqueue(int n) {
+	if (front < 0) {
+		front = 0;
+	}
+
+	rear++;
+	queue[rear] = n;
+}
+int dequeue() {
+	int res = queue[front]; //get the number to return
+	int i;
+	
+	for (i = front; i < rear; i++) { //move on the numbers after queue[front]
+		queue[i] = queue[i + 1];
+	}
+
+	queue[rear--] = NULL; //delete last number and -1 from rear
+	return res;
+}
+void queue_scan() {
+	int i;
+
+	printf("\n===SCAN START===\n");
+	for (i = front; i <= rear; i++) {
+		printf("index %d: %d\n", i, queue[i]);
+	}
+	printf("===SCAN COMPLETE===\n");
+}
